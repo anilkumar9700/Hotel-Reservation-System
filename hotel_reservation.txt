@@ -1,0 +1,158 @@
+import java.util.ArrayList;
+import java.util.Scanner;
+
+class Room {
+    private int roomNumber;
+    private String category;
+    private boolean isAvailable;
+
+    public Room(int roomNumber, String category) {
+        this.roomNumber = roomNumber;
+        this.category = category;
+        this.isAvailable = true;
+    }
+
+    public int getRoomNumber() {
+        return roomNumber;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public boolean isAvailable() {
+        return isAvailable;
+    }
+
+    public void setAvailable(boolean available) {
+        isAvailable = available;
+    }
+}
+
+class Reservation {
+    private String guestName;
+    private Room reservedRoom;
+
+    public Reservation(String guestName, Room reservedRoom) {
+        this.guestName = guestName;
+        this.reservedRoom = reservedRoom;
+        reservedRoom.setAvailable(false);
+    }
+
+    public String getGuestName() {
+        return guestName;
+    }
+
+    public Room getReservedRoom() {
+        return reservedRoom;
+    }
+}
+
+class HotelReservationSystem {
+    private static Scanner scanner = new Scanner(System.in);
+    private static ArrayList<Room> rooms = new ArrayList<>();
+    private static ArrayList<Reservation> reservations = new ArrayList<>();
+
+    public static void main(String[] args) {
+        initializeRooms();
+
+        System.out.println("Welcome to the Hotel Reservation System!");
+
+        int choice;
+        do {
+            System.out.println("\n1. Check available rooms");
+            System.out.println("2. Make a reservation");
+            System.out.println("3. View reservation details");
+            System.out.println("4. Exit");
+            System.out.print("Enter your choice (1-4): ");
+            choice = scanner.nextInt();
+
+            switch (choice) {
+                case 1:
+                    checkAvailableRooms();
+                    break;
+                case 2:
+                    makeReservation();
+                    break;
+                case 3:
+                    viewReservationDetails();
+                    break;
+                case 4:
+                    System.out.println("Exiting. Thank you!");
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please enter a number between 1 and 4.");
+            }
+
+        } while (choice != 4);
+
+        scanner.close();
+    }
+
+    private static void initializeRooms() {
+        rooms.add(new Room(101, "Standard"));
+        rooms.add(new Room(102, "Deluxe"));
+        rooms.add(new Room(103, "Suite"));
+    }
+
+    private static void checkAvailableRooms() {
+        System.out.println("Available Rooms:");
+        for (Room room : rooms) {
+            if (room.isAvailable()) {
+                System.out.println("Room " + room.getRoomNumber() + " - " + room.getCategory());
+            }
+        }
+    }
+
+    private static void makeReservation() {
+        System.out.print("Enter your name: ");
+        String guestName = scanner.next();
+
+        System.out.print("Enter the room number you want to reserve: ");
+        int roomNumber = scanner.nextInt();
+
+        Room selectedRoom = findRoom(roomNumber);
+
+        if (selectedRoom != null && selectedRoom.isAvailable()) {
+            Reservation reservation = new Reservation(guestName, selectedRoom);
+            reservations.add(reservation);
+            System.out.println("Reservation successful! Enjoy your stay!");
+        } else {
+            System.out.println("Invalid room selection or room not available.");
+        }
+    }
+
+    private static void viewReservationDetails() {
+        System.out.print("Enter your name: ");
+        String guestName = scanner.next();
+
+        Reservation reservation = findReservation(guestName);
+
+        if (reservation != null) {
+            System.out.println("Reservation Details:");
+            System.out.println("Guest Name: " + reservation.getGuestName());
+            System.out.println("Room Details: Room " + reservation.getReservedRoom().getRoomNumber() +
+                    " - " + reservation.getReservedRoom().getCategory());
+        } else {
+            System.out.println("No reservation found for the given name.");
+        }
+    }
+
+    private static Room findRoom(int roomNumber) {
+        for (Room room : rooms) {
+            if (room.getRoomNumber() == roomNumber) {
+                return room;
+            }
+        }
+        return null;
+    }
+
+    private static Reservation findReservation(String guestName) {
+        for (Reservation reservation : reservations) {
+            if (reservation.getGuestName().equals(guestName)) {
+                return reservation;
+            }
+        }
+        return null;
+    }
+}
